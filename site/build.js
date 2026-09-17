@@ -522,64 +522,40 @@ function formField({ id, label, type = 'text', req = false, placeholder = '', hi
 
 function rfqPage() {
   const h = CORE.rfq;
-  const cats = PRODUCTS.map((p) => p.name);
-  const body = `
-${heroHTML(h.hero, { ctas: false })}
-<section class="sec"><div class="container"><div class="sec-head"><span class="sec-idx" aria-hidden="true">01</span><h2>The form</h2><p class="sec-lead">Two steps. Step one is intent and contact; step two is the technical brief — fields can be marked “need guidance.”</p></div></div>
-<div class="container sec-body"><p class="prose-intro">${h.intro[0]}</p><p class="prose-intro">${h.intro[1]}</p></div></section>
-<section class="sec sec-paper" id="rfq-form"><div class="container"><div class="rfq-shell">
-  <div class="rfq-steps" aria-hidden="true"><span class="rfq-step is-on" data-step="1">1 · Intent &amp; contact</span><span class="rfq-step" data-step="2">2 · Technical brief</span><span class="rfq-step" data-step="3">3 · Consent</span></div>
-  <form id="rfq" class="rfq-form" data-multi="1" novalidate>
-    <input type="hidden" name="source" id="rfq-source" value="">
-    <input type="hidden" name="products" id="rfq-products" value="">
-    <div class="rfq-panel" data-panel="1">
-      ${formField({ id: 'inquiry_type', label: 'Inquiry type', as: 'select', req: true, opts: ['Fabric sourcing', 'Yarn sourcing', 'Product development', 'Import & distribution', 'Quality / compliance question', 'General'] })}
-      ${formField({ id: 'name', label: 'Name', req: true, placeholder: 'Your name' })}
-      ${formField({ id: 'company', label: 'Company / organization', placeholder: 'Where the program lives' })}
-      ${formField({ id: 'email', label: 'Work email', type: 'email', req: true, placeholder: 'name@company.com' })}
-      ${formField({ id: 'country', label: 'Country', placeholder: 'Where you are based' })}
-      ${formField({ id: 'buyer_type', label: 'Buyer type', as: 'select', opts: ['Apparel brand / procurement', 'Garment exporter / factory', 'Buying house', 'Product development team', 'Other'] })}
-      ${formField({ id: 'category', label: 'Product category', as: 'select', opts: cats })}
-      ${formField({ id: 'message', label: 'Your brief', as: 'textarea', req: true, placeholder: 'Construction, target spec, quantity, timeline — or the story of the program. Missing fields are fine; mark them “need guidance.”' })}
-      <div class="form-actions"><button type="button" class="btn btn-primary" data-next="2">Continue to technical brief →</button></div>
-    </div>
-    <div class="rfq-panel" data-panel="2" hidden>
-      ${formField({ id: 'fabric_type', label: 'Fabric / yarn type', hint: 'or “need guidance”', placeholder: 'e.g. 210 GSM cotton twill' })}
-      ${formField({ id: 'composition', label: 'Composition', hint: 'or “unknown”', placeholder: 'e.g. 100% cotton / CVC 60-40' })}
-      ${formField({ id: 'gsm', label: 'GSM / oz', hint: 'or range', placeholder: 'e.g. 200 GSM ±3%' })}
-      ${formField({ id: 'width', label: 'Width', hint: 'or range', placeholder: 'e.g. 60 in' })}
-      ${formField({ id: 'finish', label: 'Finish / performance', hint: 'or “need guidance”', placeholder: 'e.g. PFC-free DWR, 3,000 mm target' })}
-      ${formField({ id: 'quantity', label: 'Quantity', hint: 'or stage', placeholder: 'e.g. 5,000 m / development stage' })}
-      ${formField({ id: 'application', label: 'Target application', placeholder: 'e.g. workwear trousers' })}
-      ${formField({ id: 'destination', label: 'Destination', placeholder: 'Factory / warehouse, country' })}
-      ${formField({ id: 'timeline', label: 'Target timeline', hint: 'the decision date', placeholder: 'e.g. bulk decision by 15 Nov' })}
-      ${formField({ id: 'compliance', label: 'Certification / compliance requirement', hint: 'or “none known”', placeholder: 'e.g. GRS chain of custody; AQL 2.5' })}
-      ${formField({ id: 'technical', label: 'Technical requirement (free text)', as: 'textarea', placeholder: 'Anything else: references, wash regime, performance targets…' })}
-      ${formField({ id: 'files', label: 'Files (tech pack, references, spec sheets)', as: 'file', hint: 'attached to your inquiry' })}
-      <div class="form-actions"><button type="button" class="btn btn-ghost" data-prev="1">← Back</button><button type="button" class="btn btn-primary" data-next="3">Continue to consent →</button></div>
-    </div>
-    <div class="rfq-panel" data-panel="3" hidden>
-      ${formField({ id: 'contact_pref', label: 'Preferred contact channel', as: 'select', opts: ['Email', 'Phone', 'WhatsApp', 'No preference'] })}
-      ${formField({ id: 'consent', label: 'I consent to YOU LI storing this inquiry (name, contact, brief and files) to prepare and document my request, per the privacy policy.', as: 'check', req: true })}
-      <div class="confirm-box"><h3>What happens next</h3><ol><li>Immediate confirmation with your inquiry ID.</li><li>Routing to the Dhaka or Shanghai team by location and category.</li><li>A named contact confirms what is known, requests missing specifications, and states the next evidence artifact.</li></ol></div>
-      <div class="form-actions"><button type="button" class="btn btn-ghost" data-prev="2">← Back</button><button type="submit" class="btn btn-primary">Submit inquiry</button></div>
-      <p class="fallback">Prefer to skip the form? <a href="mailto:${SITE.contact.email}">Email the team (${SITE.contact.email})</a> or call the Dhaka office — the brief still gets the same treatment.</p>
-    </div>
-    <div class="rfq-success" hidden>
-      <p class="success-eyebrow">Inquiry received</p>
-      <h3>Your inquiry ID: <span class="inq-id"></span></h3>
-      <p class="success-note">A confirmation has been prepared for your work email. The brief is routed by location and category; a named contact will state what is known, what is missing, and the next evidence artifact — sample, specification sheet, quotation or feasibility answer.</p>
-      <div class="success-actions"><a class="btn btn-primary" href="/products/">Back to the library</a><a class="btn btn-ghost" href="/contact/">Contact</a></div>
-    </div>
-  </form>
-</div></div></section>
-${sectionsHTML([
-  { t: 'h2', title: 'How the response works' }, { t: 'steps', items: h.howItWorks },
-  { t: 'h2', title: 'Before you send' }, { t: 'paras', body: ['A qualified inquiry typically includes a defined product need, a company or organization, a destination, an approximate quantity or development stage, and a timeline. Qualification is an internal workflow step — it determines how fast the first substantive answer comes, not whether you are worth answering.'] },
-  { t: 'h2', title: 'FAQ' }, { t: 'faq', items: h.faq },
-])}
-${nextHTML([['Fabric Library', 'Add up to three records to one request.', '/products/'], ['How to Prepare a Fabric RFQ', 'The guide that sharpens step two.', '/resources/fabric-guides/prepare-a-fabric-rfq/'], ['Contact', 'The direct routes.', '/contact/']])}`;
-  return { html: layout({ url: '/request-a-quote/', title: h.title, meta: h.meta, body, crumbs: [['Request a Quote', '/request-a-quote/']], faq: h.faq }) };
+  const field = ({ id, label, type = 'text', req = false, placeholder = '', as = 'input' }) => {
+    const reqMark = req ? ' <span class="req" aria-hidden="true">*</span>' : '';
+    const labelHTML = '<label class="flabel" for="f-' + id + '">' + label + reqMark + '</label>';
+    const control = as === 'textarea' ? '<textarea class="field" id="f-' + id + '" name="' + id + '" rows="4"' + (req ? ' required' : '') + ' placeholder="' + esc(placeholder) + '"></textarea>' : '<input class="field" type="' + type + '" id="f-' + id + '" name="' + id + '"' + (req ? ' required' : '') + ' placeholder="' + esc(placeholder) + '">';
+    return '<div class="rfq-field">' + labelHTML + control + '</div>';
+  };
+  const select = (id, label, options, required = false) => {
+    const req = required ? ' <span class="req" aria-hidden="true">*</span>' : '';
+    return '<div class="rfq-field"><label class="flabel" for="f-' + id + '">' + label + req + '</label><div class="selwrap"><select class="field" id="f-' + id + '" name="' + id + '"' + (required ? ' required' : '') + '>' + options.map((o) => '<option value="' + esc(o) + '">' + esc(o) + '</option>').join('') + '</select></div></div>';
+  };
+  const side = '<aside class="rfq-aside"><div class="rfq-info"><span class="rfq-info-mark">i</span><div><h3>What happens after you submit</h3><p>Your inquiry is logged with a unique ID and routed by buyer location and product category. A named contact confirms what is known, what is missing, and the next evidence artifact.</p></div></div><div class="rfq-office-card"><p class="eyebrow">Prefer to talk directly?</p><h2>Contact an office</h2><p><strong>Bangladesh Office — Uttara, Dhaka</strong><br>Local execution, delivery coordination and inspection scheduling.</p><p><strong>China Office — Shanghai</strong><br>Mill matching, sampling and export documentation.</p></div><div class="rfq-ready"><p>Before you submit, have ready:</p><ul><li>Composition, construction and weight (if known)</li><li>Target quantity and delivery destination</li><li>Reference swatch, tech pack or product photo</li><li>Certification or compliance requirement</li></ul></div></aside>';
+  const body = '<section class="hero"><div class="container hero-inner"><div class="hero-copy"><p class="eyebrow">Request a Quote</p><h1>Request a fabric match or quotation</h1><p class="lead">Two short steps — intent and technical brief — followed by a confirmation with a tracked inquiry ID. Mark any field “unknown” if you need guidance.</p></div></div></section><section class="sec rfq-reference"><div class="container"><div class="rfq-layout"><div class="rfq-shell"><div class="rfq-steps"><span class="rfq-step is-on" data-step="1">1. Intent &amp; Contact</span><span class="rfq-step" data-step="2">2. Technical Brief</span><span class="rfq-step" data-step="3">3. Confirm</span></div><form id="rfq" class="rfq-form" data-multi="1" novalidate><div class="rfq-panel" data-panel="1">' +
+    select('inquiry_type', 'Inquiry type', ['General fabric sourcing inquiry','Product / category inquiry','Sample request','Specification request','Quotation request']) +
+    select('buyer_type', 'Buyer type', ['Apparel brand','Garment exporter / factory','Buying house','Product development team','Other']) +
+    field({ id: 'name', label: 'Full name', req: true, placeholder: 'Your full name' }) +
+    field({ id: 'email', label: 'Work email', type: 'email', req: true, placeholder: 'you@company.com' }) +
+    field({ id: 'company', label: 'Company', placeholder: 'Company / buying house' }) +
+    field({ id: 'country', label: 'Country', placeholder: 'Country' }) +
+    select('category', 'Product category', ['Woven fabrics','Knit fabrics','Denim fabrics','Sportswear & activewear','Functional & technical fabrics']) +
+    field({ id: 'message', label: 'Message', as: 'textarea', req: true, placeholder: 'Briefly describe what you\'re looking to source, and any deadline.' }) +
+    '<div class="form-actions"><button type="button" class="btn btn-primary" data-next="2">Continue →</button></div></div><div class="rfq-panel" data-panel="2" hidden><p class="rfq-panel-intro">Provide as much detail as you know. Leave any field blank or type “unknown” — the sourcing team will match your questions.</p>' +
+    field({ id: 'composition', label: 'Composition / fibre', placeholder: 'e.g. 100% cotton, TC 65/35' }) +
+    field({ id: 'gsm', label: 'Target GSM / oz', placeholder: 'e.g. 180 gsm' }) +
+    field({ id: 'width', label: 'Width', placeholder: 'e.g. 58–60 in' }) +
+    field({ id: 'finish', label: 'Finish / performance requirement', placeholder: 'e.g. water-repellent, brushed' }) +
+    field({ id: 'quantity', label: 'Quantity', placeholder: 'e.g. 20,000 yards' }) +
+    field({ id: 'destination', label: 'Delivery destination', placeholder: 'e.g. Chattogram / Dhaka' }) +
+    field({ id: 'timeline', label: 'Target timeline', placeholder: 'e.g. bulk by Oct 2026' }) +
+    field({ id: 'compliance', label: 'Certification / compliance requirement', placeholder: 'e.g. OEKO-TEX, GRS' }) +
+    '<div class="filewrap rfq-upload"><label class="flabel" for="f-files">Attach a tech pack, reference photo or spec sheet</label><input type="file" id="f-files" name="files" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"><p class="fhint">Drag a file here, or click to browse (PDF, JPG, PNG — max 15MB)</p></div><div class="form-actions"><button type="button" class="btn btn-ghost" data-prev="1">← Back</button><button type="button" class="btn btn-primary" data-next="3">Continue →</button></div></div><div class="rfq-panel" data-panel="3" hidden><div class="rfq-confirm"><p class="eyebrow">Final step</p><h2>Confirm your request</h2><p>We will use your brief to prepare a specification comparison, mill-matched options, and the next evidence artifact.</p></div>' +
+    select('contact_pref', 'Preferred contact channel', ['Email','Phone','WhatsApp','No preference']) +
+    '<label class="checkline"><input type="checkbox" id="f-consent" name="consent" required><span>I consent to YOU LI storing this inquiry to prepare and document my request, per the privacy policy. <span class="req">*</span></span></label><div class="form-actions"><button type="button" class="btn btn-ghost" data-prev="2">← Back</button><button type="submit" class="btn btn-primary">Submit inquiry</button></div><p class="fallback">Prefer to skip the form? <a href="mailto:' + SITE.contact.email + '">Email the team (' + SITE.contact.email + ')</a></p></div><div class="rfq-success" hidden><p class="success-eyebrow">Inquiry received</p><h3>Your inquiry ID: <span class="inq-id"></span></h3><p class="success-note">A confirmation has been prepared. A named contact will state what is known, what is missing, and the next evidence artifact.</p><div class="success-actions"><a class="btn btn-primary" href="/products/">Back to the library</a><a class="btn btn-ghost" href="/contact/">Contact</a></div></div></form></div>' + side + '</div></div></section>' +
+    sectionsHTML([{ t: 'h2', title: 'How the response works' }, { t: 'steps', items: h.howItWorks }, { t: 'h2', title: 'FAQ' }, { t: 'faq', items: h.faq }]);
+  return { html: layout({ url: '/request-a-quote/', title: 'Request a fabric match or quotation — YOU LI', meta: 'Two short steps to send a fabric sourcing brief, technical specification and request for quotation.', body, crumbs: [['Request a Quote', '/request-a-quote/']], faq: h.faq }) };
 }
 
 function samplePage() {
