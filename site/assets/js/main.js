@@ -3,6 +3,9 @@
   'use strict';
   document.documentElement.classList.add('js');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var scriptTag = document.querySelector('script[src*="assets/js/main.js"]');
+  var basePath = scriptTag ? new URL(scriptTag.getAttribute('src'), window.location.href).pathname.replace(/assets\/js\/main\.js$/, '') : '';
+  function siteUrl(path) { return basePath.replace(/\/$/, '') + path; }
 
   /* ---------- mobile nav ---------- */
   var toggle = document.querySelector('.nav-toggle');
@@ -31,14 +34,21 @@
       e.preventDefault();
       var wasOpen = item.classList.contains('open');
       closeAll();
-      if (!wasOpen) item.classList.add('open');
+      if (!wasOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
     });
     btn.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { item.classList.remove('open'); }
+      if (e.key === 'Escape') { item.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
     });
   });
   function closeAll() {
-    document.querySelectorAll('.nav-item.open').forEach(function (i) { i.classList.remove('open'); });
+    document.querySelectorAll('.nav-item.open').forEach(function (i) {
+      i.classList.remove('open');
+      var b = i.querySelector('.nav-btn[aria-expanded]');
+      if (b) b.setAttribute('aria-expanded', 'false');
+    });
   }
   document.addEventListener('click', function (e) {
     if (!e.target.closest('.nav-item')) closeAll();
@@ -117,7 +127,7 @@
     var CMP_KEY = 'youli_compare';
     var cmpBar = document.createElement('div');
     cmpBar.className = 'cmp-bar';
-    cmpBar.innerHTML = '<div class="container cmp-inner"><strong style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze-2)">Compare</strong><span class="cmp-items"></span><span class="cmp-actions"><button class="btn btn-ghost btn-sm" data-cmp-clear type="button">Clear</button><a class="btn btn-bronze btn-sm" data-cmp-rfq href="/request-a-quote/" href2="/request-a-quote/">Send in one RFQ</a></span></div>';
+    cmpBar.innerHTML = '<div class="container cmp-inner"><strong style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze-2)">Compare</strong><span class="cmp-items"></span><span class="cmp-actions"><button class="btn btn-ghost btn-sm" data-cmp-clear type="button">Clear</button><a class="btn btn-bronze btn-sm" data-cmp-rfq href="' + siteUrl('/request-a-quote/') + '">Send in one RFQ</a></span></div>';
     document.body.appendChild(cmpBar);
     var cmpItems = cmpBar.querySelector('.cmp-items');
     var cmpRfq = cmpBar.querySelector('[data-cmp-rfq]');
@@ -146,8 +156,8 @@
       var on = list.length > 0;
       cmpBar.classList.toggle('is-on', on);
       document.body.classList.toggle('has-cmp', on);
-      if (on) cmpRfq.setAttribute('href', '/request-a-quote/?compare=' + list.map(function (i) { return i.slug; }).join(','));
-      else cmpRfq.setAttribute('href', '/request-a-quote/');
+      if (on) cmpRfq.setAttribute('href', siteUrl('/request-a-quote/?compare=' + list.map(function (i) { return i.slug; }).join(',')));
+      else cmpRfq.setAttribute('href', siteUrl('/request-a-quote/'));
       document.querySelectorAll('.cmp-toggle').forEach(function (b) {
         b.setAttribute('aria-pressed', String(list.some(function (i) { return i.slug === b.getAttribute('data-slug'); })));
       });
@@ -225,13 +235,17 @@
     });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var allOk = true;
+      var firstBad = null;
       panels.forEach(function (p) {
-        p.querySelectorAll('[required]').forEach(function (f) { if (!f.checkValidity()) allOk = false; });
+        p.querySelectorAll('[required]').forEach(function (f) {
+          var bad = !f.checkValidity();
+          f.style.outline = bad ? '1.5px solid #B7791F' : '';
+          if (bad && !firstBad) firstBad = { field: f, panel: Number(p.getAttribute('data-panel')) };
+        });
       });
-      if (!allOk) {
-        var bad = form.querySelector('.rfq-panel:not([hidden]) [required]:invalid');
-        if (bad) { goto(Number(bad.closest('.rfq-panel').getAttribute('data-panel'))); bad.focus(); }
+      if (firstBad) {
+        goto(firstBad.panel);
+        firstBad.field.focus();
         return;
       }
       var id = 'YL-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();

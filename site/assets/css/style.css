@@ -579,3 +579,12 @@ input.field,select.field{width:100%}
 .hero .btn-primary{background:#C58B3A;color:#0C1B2A;border-color:#C58B3A}.hero .btn-ghost{background:rgba(12,27,42,.18);color:var(--ivory);border-color:rgba(246,243,238,.62)}
 .mainbar .btn-primary{min-height:44px;padding:11px 20px}
 @media(max-width:960px){.btn-primary,.btn-ghost,.btn-bronze{width:100%;justify-content:center}}
+
+/* Header dropdown and form interaction fixes */
+@media (min-width:1121px){
+  .nav-item.has-drop .drop-panel{left:0;right:auto;min-width:560px}
+  .nav-item.has-drop.align-r .drop-panel{left:auto;right:0}
+  .nav-item.has-drop .drop-inner{max-width:none}
+}
+.rfq-panel[hidden],.rfq-success[hidden],.mobile-nav[hidden]{display:none!important}
+.rfq-panel{scroll-margin-top:110px}
