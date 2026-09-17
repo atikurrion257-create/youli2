@@ -465,19 +465,8 @@ function homePage() {
   const lib = [];
   PRODUCTS.forEach((p) => p.items.forEach((i) => lib.push({ name: i.name, slug: i.slug, href: `/products/${p.slug}/${i.slug}/`, cat: p.slug, catName: p.name, image: p.image, short: i.short, chips: (i.specs || []).slice(0, 2) })));
   const featured = ['poplin', 'interlock', 'regular', 'yoga', 'waterproof', 'coolmax'].map((s) => lib.find((d) => d.slug === s)).filter(Boolean);
-  const body = `
-<section class="hero hero-home">
-  <div class="hero-home-media" aria-hidden="true"><img src="${h.hero.image}" alt=""></div>
-  <div class="container hero-inner">
-    <div class="hero-copy">
-      <p class="eyebrow">${esc(h.hero.eyebrow)}</p>
-      <h1>${esc(h.hero.title)}</h1>
-      <p class="lead">${esc(h.hero.lead)}</p>
-      <div class="hero-actions"><a class="btn btn-primary" href="/request-a-quote/">Request a Fabric Match</a><a class="btn btn-ghost" href="/products/">Browse the Fabric Library</a></div>
-    </div>
-  </div>
-  <div class="proof-strip" role="list"><div class="container proof-inner">${h.proofStrip.map(([k, v, st]) => `<span class="proof-item" role="listitem"><b>${esc(k)}</b>${esc(v)}${pill(st)}</span>`).join('')}</div></div>
-</section>
+  const body = `${heroHTML(h.hero)}
+<div class="proof-strip" role="list"><div class="container proof-inner">${h.proofStrip.map(([k, v, st]) => `<span class="proof-item" role="listitem"><b>${esc(k)}</b>${esc(v)}${pill(st)}</span>`).join('')}</div></div>
 <section class="sec"><div class="container"><div class="sec-head"><span class="sec-idx" aria-hidden="true">01</span><h2>Where you are coming from</h2></div></div>
 <div class="container sec-body"><div class="path-grid">${h.buyerPaths.map((p) => `<a class="path-card" href="${p.href}"><span class="path-t">${esc(p.title)}</span><span class="path-s">${esc(p.body)}</span><span class="path-c">${esc(p.cta)} →</span></a>`).join('')}</div></div></section>
 <section class="sec sec-paper"><div class="container"><div class="sec-head"><span class="sec-idx" aria-hidden="true">02</span><h2>The categories</h2></div></div>
