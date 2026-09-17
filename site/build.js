@@ -297,9 +297,24 @@ function sectionsHTML(sections) {
   return html;
 }
 
+function heroImage(h) {
+  if (h.image) return h.image;
+  const text = `${h.eyebrow || ''} ${h.title || ''}`.toLowerCase();
+  if (/privacy|terms of use|cookie/.test(text)) return '';
+  if (/denim/.test(text)) return '/assets/img/denim.jpg';
+  if (/knit|jersey|fleece|sherpa|velour/.test(text)) return '/assets/img/knit.jpg';
+  if (/woven|poplin|twill|canvas|corduroy|satin|ripstop|dobby|yarn-dyed|cotton|polyester/.test(text)) return '/assets/img/woven.jpg';
+  if (/sportswear|activewear|performance/.test(text)) return '/assets/img/activewear.jpg';
+  if (/yarn/.test(text)) return '/assets/img/yarns.jpg';
+  if (/quality|inspection|compliance|certification|sustainability/.test(text)) return '/assets/img/inspection.jpg';
+  if (/office|company|team|story|contact|network/.test(text)) return '/assets/img/office.jpg';
+  return '/assets/img/rolls.jpg';
+}
+
 function heroHTML(h, opts = {}) {
   const ctas = opts.ctas !== false;
-  return `<section class="hero${h.image ? ' hero-media' : ''}">
+  const image = heroImage(h);
+  return `<section class="hero${image ? ' hero-media' : ''}">
     <div class="container hero-inner">
       <div class="hero-copy">
         <p class="eyebrow">${esc(h.eyebrow)}</p>
@@ -307,7 +322,7 @@ function heroHTML(h, opts = {}) {
         <p class="lead">${esc(h.lead)}</p>
         ${ctas ? `<div class="hero-actions"><a class="btn btn-primary" href="/request-a-quote/">Request a Fabric Match</a><a class="btn btn-ghost" href="/products/">Browse the Fabric Library</a></div>` : ''}
       </div>
-      ${h.image ? `<figure class="hero-media-fig"><img src="${h.image}" alt=""><span class="img-cap">Conceptual imagery — not a depiction of real operations</span></figure>` : ''}
+      ${image ? `<figure class="hero-media-fig"><img src="${image}" alt="" loading="eager"><span class="img-cap">Conceptual imagery — not a depiction of real operations</span></figure>` : ''}
     </div>
   </section>`;
 }
